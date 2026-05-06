@@ -154,3 +154,175 @@ SELECT d.name, COUNT(p.project_id) AS total_projects
  from Department d
  left join Project p on d.department_id = p.department_id
  group by d.name
+
+-- Question 41: Employees with salary greater than average salary
+select * from Employee
+where salary > (
+  select avg(salary) from Employee
+ );
+
+-- Question 42: Employee with highest salary
+select * from Employee
+where salary = (
+  select max(salary) from Employee
+ );
+
+-- Question 43: Employee with lowest salary
+select * from Employee
+where salary = (
+  select min(salary) from Employee
+ );
+
+-- Question 44: Employees working in same department as John Doe
+select * from Employee
+where department_id = (
+  select department_id from Employee where name = 'John Doe'
+  );
+
+-- Question 45: Departments having more than 2 employees
+select department_id
+from Employee
+group by department_id
+having count(*) > 2;
+
+-- Question 46: Employees whose salary is above department average
+select * from Employee e
+where salary > (
+  select avg(salary)
+  from Employee
+  where department_id = e.department_id
+  );
+
+-- Question 47: Department with highest average salary
+SELECT department_id, AVG(salary) AS avg_salary
+FROM Employee
+GROUP BY department_id
+ORDER BY avg_salary DESC
+LIMIT 1;
+
+-- Question 48: Employees hired earliest
+select *
+from Employee
+where hire_date = (
+    select MIN(hire_date)
+    from Employee
+);
+
+-- Question 49: Employees not assigned to any department
+select * from Employee
+where department_id is null;
+
+-- Question 50: Projects without department
+select * from Project
+where department_id is null;
+
+-- Question 51: Select the nth highest salary (example: 3rd highest).
+select distinct salary
+from Employee
+order by salary desc
+limit 1 offset 2;
+
+-- Question 52: Select employees who are older than all employees in the HR department.
+SELECT *
+FROM Employee
+WHERE age > ALL (
+    SELECT age
+    FROM Employee
+    WHERE department_id = (
+        SELECT department_id
+        FROM Department
+        WHERE name = 'HR'
+    )
+);
+
+-- Question 54: Select employees who work in a department with at least 2 projects.
+select * from Employee
+where department_id in (
+  select department_id
+  from Project group by department_id having count(project_id)>= 2
+  );
+
+-- Question 55: Select employees who were hired on the same date as 'Jane Smith'.
+select *
+from Employee
+where hire_date = (
+    select hire_date
+    from Employee
+    where name = 'Jane Smith'
+);
+
+-- Question 56: Select the total salary of employees hired in the year 2020.
+select sum(salary) from Employee
+where year(hire_date) = 2020;
+
+-- Question 57: Select the average salary of employees in each department, ordered by the average salary in descending order.
+select department_id, AVG(salary) AS avg_salary
+from Employee
+group by department_id
+order by avg_salary desc;
+
+-- Question 58: Select departments with more than 1 employee and an average salary greater than 55000.
+select department_id, count(*) as total_employees, AVG(salary) as avg_salary
+from Employee
+group by department_id
+having count(*) > 1
+and AVG(salary) > 55000;
+
+-- Question 59: Select employees hired in the last 2 years, ordered by their hire date.
+select * from Employee
+where hire_date >= date_sub(curdate(), interval 2 year)
+order by hire_date
+
+-- Question 60: Select the total number of employees and the average salary for departments with more than 2 employees.
+select department_id,
+       count(*) as total_employees,
+       AVG(salary) as avg_salary
+from Employee
+group by department_id
+having count(*) > 2;
+
+-- Question 61: Select the name and salary of employees whose salary is above the average salary of their department.
+select name,salary
+from Employee e
+where salary > (
+  select avg(salary)
+  from Employee
+  where department_id = e.department_id
+  );
+
+-- Question 62: Select the names of employees who are hired on the same date as the oldest employee in the company.
+SELECT name
+FROM Employee
+WHERE hire_date = (
+    SELECT hire_date
+    FROM Employee
+    ORDER BY age DESC
+    LIMIT 1
+);
+
+-- Question 63: Select the department names along with the total number of projects they are working on, ordered by the number of projects.
+SELECT d.name,
+       COUNT(p.project_id) AS total_projects
+FROM Department d
+LEFT JOIN Project p
+ON d.department_id = p.department_id
+GROUP BY d.name
+ORDER BY total_projects DESC;
+
+-- Question 64: Select the employee name with the highest salary in each department.
+SELECT e.name, e.department_id, e.salary
+FROM Employee e
+WHERE salary = (
+    SELECT MAX(salary)
+    FROM Employee
+    WHERE department_id = e.department_id
+);
+
+-- Question 65: Select the names and salaries of employees who are older than the average age of employees in their department.
+SELECT name, salary
+FROM Employee e
+WHERE age > (
+    SELECT AVG(age)
+    FROM Employee
+    WHERE department_id = e.department_id
+);
